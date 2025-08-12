@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { useTaks } from "../Context/TaskContext.tsx";
-
 import type { TaksType } from '../types.ts';
+
+import trash from '../../public/icons/trash.svg';
+import clipboard from '../../public/icons/clipboard.svg';
+import check from '../../public/icons/check.svg';
+
 
 
 interface CheckBoxProps {
@@ -13,13 +17,16 @@ interface CheckBoxProps {
 
 
 const CheckBox = ({ completeHook: { completada, turnComplete } }: CheckBoxProps) => {
-    // const [active, setActive] = useState(false);
-
     return (
-        <div className="w-10 aspect-square bg-blue-100 flex border-2 border-blue-500 rounded-md items-center justify-center cursor-pointer overflow-hidden select-none" onClick={turnComplete}>
-            {completada && <img src="/icons/check.svg" alt="" className="w-full bg-blue-300" />}
+        <div
+            className="w-10 aspect-square bg-blue-100 flex border-2 border-blue-500 rounded-md items-center justify-center cursor-pointer overflow-hidden select-none"
+            onClick={turnComplete}
+        >
+            {completada ? (
+                <img src={check} alt="completada" className="w-full bg-blue-300" />
+            ) : null}
         </div>
-    )
+    );
 }
 
 interface TaskProps {
@@ -59,10 +66,10 @@ function Task({ tareaProp: { titulo, descripcion, completada, id } }: TaskProps)
             </div>
 
             <button type="button" className="flex p-2 items-center justify-center w-10 h-10 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer select-none aspect-square" onClick={() => deteleTaks(id)}>
-                <img src="/icons/trash.svg" alt="borrar" className='w-full' />
+                <img src={trash} alt="borrar" className='w-full' />
             </button>
             <button type="button" className="flex p-2 items-center justify-center w-10 h-10 bg-gray-100 rounded-md hover:bg-gray-200 cursor-pointer select-none aspect-square" onClick={copyTaks}>
-                <img src="/icons/clipboard.svg" alt="copiar" className='w-full' />
+                <img src={clipboard} alt="copiar" className='w-full' />
             </button>
         </div>
     )
