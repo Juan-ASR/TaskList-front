@@ -1,6 +1,10 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 // import {  saveTask } from "../taksManager.ts"
 import type { TaksType } from '../types.ts';
+import dotenv from 'dotenv';
+// import process from 'node:process';
+
+dotenv.config();
 
 interface TaksContextType{
     taks: TaksType[]
@@ -18,7 +22,7 @@ function TaksContextProvider({ children }: {children: ReactNode}) {
     useEffect(() => {
         async function fetchTaks() {
             // const loadedTasks = json as TaksType[]
-            const response = await fetch('http://localhost:3000/task'); 
+            const response = await fetch(import.meta.env.VITE_API+'/task'); 
             const loadedTasks = await response.json() as TaksType[]
             setTaks(loadedTasks); 
         }
@@ -28,7 +32,7 @@ function TaksContextProvider({ children }: {children: ReactNode}) {
     const addTaks: TaksContextType['addTaks'] = async (task) => {
         
         try {
-            const response = await fetch('http://localhost:3000/task', {
+            const response = await fetch(import.meta.env.VITE_API+'/task', {
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -46,7 +50,7 @@ function TaksContextProvider({ children }: {children: ReactNode}) {
 
     const checkTaks: TaksContextType['checkTaks'] = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/task/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API}/task/${id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -72,7 +76,7 @@ function TaksContextProvider({ children }: {children: ReactNode}) {
 
     const deteleTaks: TaksContextType['deteleTaks'] = async (id) => {
         try {
-            const response = await fetch(`http://localhost:3000/task/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API}/task/${id}`, {
                 method: 'DELETE',
             });
 
