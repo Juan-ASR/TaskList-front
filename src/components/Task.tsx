@@ -33,7 +33,7 @@ interface TaskProps {
     tareaProp: TaksType
 }
 
-function Task({ tareaProp: { titulo, descripcion, completada, id } }: TaskProps) {
+function Task({ tareaProp: { titulo, descripcion, completada, _id: id } }: TaskProps) {
 
     const [more, setMore] = useState(false);
     // const [completed, setCompleted] = useState(completada);

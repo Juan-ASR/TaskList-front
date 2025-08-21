@@ -1,16 +1,16 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 // import {  saveTask } from "../taksManager.ts"
 import type { TaksType } from '../types.ts';
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 // import process from 'node:process';
 
-dotenv.config();
+// dotenv.config();
 
 interface TaksContextType{
     taks: TaksType[]
-    addTaks: (task: Omit<TaksType, 'id' | 'completada' | 'borrada'>) => Promise<void>
-    checkTaks: (id: number) => Promise<void>
-    deteleTaks: (id: number) => Promise<void>
+    addTaks: (task: Omit<TaksType, '_id' | 'completada'>) => Promise<void>
+    checkTaks: (_id: string) => Promise<void>
+    deteleTaks: (_id: string) => Promise<void>
 }
 
 const TaksContext = createContext<TaksContextType | undefined>(undefined);
@@ -48,17 +48,26 @@ function TaksContextProvider({ children }: {children: ReactNode}) {
         }
     }
 
-    const checkTaks: TaksContextType['checkTaks'] = async (id) => {
+    const checkTaks: TaksContextType['checkTaks'] = async (_id) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API}/task/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API}/task/${_id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-            const checkedTaks = await response.json() as TaksType;
-            const updatedTaks = taks.map((t: TaksType) => t.id === checkedTaks.id ? checkedTaks : t);
-            setTaks(updatedTaks);
+            const checkedTaks = await response.json() as Pick<TaksType, '_id' | 'completada'>;
+            const updatedTasks = [...taks]
+            const searchTask = updatedTasks.findIndex((t) => t._id === checkedTaks._id)
+            if (searchTask == -1){
+                throw new Error('Error al marcar la tarea')
+            }
+
+            updatedTasks[searchTask].completada = checkedTaks.completada;
+            setTaks(updatedTasks)
+
+            // const updatedTaks = taks.map((t: TaksType) => t._id === checkedTaks._id ? checkedTaks : t);
+            // setTaks(updatedTaks);
         } catch (error) {
             console.error(error);
             alert('Error al checkear la tarea');
@@ -74,16 +83,16 @@ function TaksContextProvider({ children }: {children: ReactNode}) {
 
     }
 
-    const deteleTaks: TaksContextType['deteleTaks'] = async (id) => {
+    const deteleTaks: TaksContextType['deteleTaks'] = async (_id) => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_API}/task/${id}`, {
+            const response = await fetch(`${import.meta.env.VITE_API}/task/${_id}`, {
                 method: 'DELETE',
             });
 
-            if (!response.ok) throw new Error("No se pudo eliminar la tarea");
+            const tareaBorrada = await response.json() as Pick<TaksType, '_id'>//obtener de tasktype solo el id
 
             // Filtrar tarea eliminada del estado
-            const updated = taks.filter((task: TaksType) => task.id !== id);
+            const updated = taks.filter( t => t._id !== tareaBorrada._id)
             setTaks(updated);
         } catch (error) {
             console.error("Error al eliminar tarea:", error);
